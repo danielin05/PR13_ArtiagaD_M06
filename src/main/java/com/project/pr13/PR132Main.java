@@ -141,49 +141,8 @@ public class PR132Main {
      */
     public List<List<String>> llistarCursos() {
         // *************** CODI PRÀCTICA **********************/
-        List<List<String>> cursos = new ArrayList<>();
-    
-        try {
-            // Crear una instancia de DocumentBuilderFactory
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            
-            // Parsear el fitxer XML
-            File xmlFile = new File("../../../../../../data/pr13/cursos.xml"); // Cambia esto por el camino real de tu archivo
-            Document document = builder.parse(xmlFile);
-            
-            // Obtener todos los elementos <curso>
-            NodeList nodeList = document.getElementsByTagName("curs");
-            
-            // Recorrer cada elemento <curso>
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element cursoElement = (Element) node;
-                    
-                    String idCurso = cursoElement.getAttribute("id");
-                    
-                    String tutor = cursoElement.getElementsByTagName("tutor").item(0).getTextContent();
-                    
-                    String nombreAlumnes = cursoElement.getElementsByTagName("alumnes").item(0).getTextContent();
-                    
-                    List<String> infoCurso = new ArrayList<>();
-                    infoCurso.add(idCurso);
-                    infoCurso.add(tutor);
-                    infoCurso.add(nombreAlumnes);
-                    
-                    cursos.add(infoCurso);
-                }
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error en la lectura del fitxer XML.");
-        }
-        
-        return cursos;
-        }
+        return null;
+    }
 
     /**
      * Imprimeix per consola una taula amb la informació dels cursos.
