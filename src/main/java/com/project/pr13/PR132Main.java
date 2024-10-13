@@ -140,9 +140,33 @@ public class PR132Main {
      * @return Llista amb la informació dels cursos (ID, tutor, nombre d'alumnes).
      */
     public List<List<String>> llistarCursos() {
-        // *************** CODI PRÀCTICA **********************/
-        return null;
+        List<List<String>> cursos = new ArrayList<>();
+        try {
+            Document document = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = "/cursos/curs";
+            NodeList cursosNodeList = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+    
+            for (int i = 0; i < cursosNodeList.getLength(); i++) {
+                Node cursNode = cursosNodeList.item(i);
+                Element cursElement = (Element) cursNode;
+                String id = cursElement.getAttribute("id");
+                String tutor = xpath.evaluate("tutor", cursElement);
+                NodeList alumnesNodeList = (NodeList) xpath.evaluate("alumnes/alumne", cursElement, XPathConstants.NODESET);
+                int totalAlumnes = alumnesNodeList.getLength();
+    
+                List<String> cursInfo = new ArrayList<>();
+                cursInfo.add(id);
+                cursInfo.add(tutor);
+                cursInfo.add(String.valueOf(totalAlumnes));
+                cursos.add(cursInfo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cursos;
     }
+    
 
     /**
      * Imprimeix per consola una taula amb la informació dels cursos.
@@ -161,9 +185,30 @@ public class PR132Main {
      * @return Llista amb la informació dels mòduls (ID, títol).
      */
     public List<List<String>> mostrarModuls(String idCurs) {
-        // *************** CODI PRÀCTICA **********************/
-        return null; // Substitueix pel teu
+        List<List<String>> moduls = new ArrayList<>();
+        try {
+            Document document = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = String.format("/cursos/curs[@id='%s']/moduls/modul", idCurs);
+            NodeList modulsNodeList = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+    
+            for (int i = 0; i < modulsNodeList.getLength(); i++) {
+                Node modulNode = modulsNodeList.item(i);
+                Element modulElement = (Element) modulNode;
+                String idModul = modulElement.getAttribute("id");
+                String titol = xpath.evaluate("titol", modulElement);
+    
+                List<String> modulInfo = new ArrayList<>();
+                modulInfo.add(idModul);
+                modulInfo.add(titol);
+                moduls.add(modulInfo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return moduls;
     }
+    
 
     /**
      * Imprimeix per consola una taula amb la informació dels mòduls.
@@ -182,9 +227,23 @@ public class PR132Main {
      * @return Llista amb els noms dels alumnes.
      */
     public List<String> llistarAlumnes(String idCurs) {
-        // *************** CODI PRÀCTICA **********************/
-        return null; // Substitueix pel teu
+        List<String> alumnes = new ArrayList<>();
+        try {
+            Document document = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = String.format("/cursos/curs[@id='%s']/alumnes/alumne", idCurs);
+            NodeList alumnesNodeList = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+    
+            for (int i = 0; i < alumnesNodeList.getLength(); i++) {
+                String alumne = alumnesNodeList.item(i).getTextContent();
+                alumnes.add(alumne);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return alumnes;
     }
+    
 
     /**
      * Imprimeix per consola la llista d'alumnes d'un curs.
@@ -203,8 +262,25 @@ public class PR132Main {
      * @param nomAlumne Nom de l'alumne a afegir.
      */
     public void afegirAlumne(String idCurs, String nomAlumne) {
-        // *************** CODI PRÀCTICA **********************/
+        try {
+            Document document = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = String.format("/cursos/curs[@id='%s']/alumnes", idCurs);
+            Node alumnesNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+    
+            if (alumnesNode != null) {
+                Element nouAlumne = document.createElement("alumne");
+                nouAlumne.setTextContent(nomAlumne);
+                alumnesNode.appendChild(nouAlumne);
+                guardarDocumentXML(document);
+            } else {
+                System.out.println("No s'ha trobat el curs especificat.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
 
     /**
      * Elimina un alumne d'un curs especificat pel seu ID.
@@ -213,8 +289,23 @@ public class PR132Main {
      * @param nomAlumne Nom de l'alumne a eliminar.
      */
     public void eliminarAlumne(String idCurs, String nomAlumne) {
-        // *************** CODI PRÀCTICA **********************/
+        try {
+            Document document = carregarDocumentXML(xmlFilePath);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = String.format("/cursos/curs[@id='%s']/alumnes/alumne[text()='%s']", idCurs, nomAlumne);
+            Node alumneNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+    
+            if (alumneNode != null) {
+                alumneNode.getParentNode().removeChild(alumneNode);
+                guardarDocumentXML(document);
+            } else {
+                System.out.println("No s'ha trobat l'alumne o curs especificat.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    
 
     /**
      * Carrega el document XML des de la ruta especificada.
